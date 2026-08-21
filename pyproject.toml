@@ -1,0 +1,100 @@
+[project]
+name = "my-worker"
+version = "0.1.0"
+description = "NeOps worker with custom function blocks (boilerplate — rename via `make init-repo NAME=<name>`)"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "neops_worker_sdk==0.2.0b4",
+    # The SDK's Cisco IOS scrapli config operations need scrapli-cfg, but no
+    # PyPI release of scrapli-cfg is compatible with scrapli>=2026.2.20, and
+    # PyPI forbids direct-URL requirements in published metadata — so the SDK
+    # keeps it in a non-published `fb` dependency group. An end project like
+    # this one CAN declare the git pin directly; this mirrors the SDK's fb
+    # group. Drop it if none of your function blocks touch IOS devices.
+    "scrapli-cfg @ git+https://github.com/scrapli/scrapli_cfg@2026.06.25",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.13",
+    "pyrefly>=0.49.0",
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+    "pip>=26.0",
+    "pip-audit>=2.7.3",
+]
+
+[tool.uv]
+# Plain `uv sync` installs dev, so a fresh clone can lint and run tests
+# without extra flags.
+default-groups = ["dev"]
+# paramiko 4.0.0 carries PYSEC-2026-2858 with no fixed 4.x release; netmiko
+# 4.7.0 caps paramiko<5, which would drag it in. Constraining paramiko>=5
+# makes the resolver fall back to netmiko 4.6.0 + paramiko 5.0.0 — the same
+# closure the SDK's own lockfile ships, and the one `make audit` passes on.
+# Drop this once netmiko allows paramiko 5.
+constraint-dependencies = ["paramiko>=5.0.0"]
+
+[tool.hatch.metadata]
+# Required for the scrapli-cfg git dependency above.
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["my_worker"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)s] %(message)s"
+log_cli_date_format = "%H:%M:%S"
+
+[tool.pyrefly]
+project_includes = ["my_worker", "tests", "scripts"]
+
+[tool.pyrefly.errors]
+# Ignore untyped imports
+untyped-import = "ignore"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+include = ["my_worker/**/*.py", "tests/**/*.py", "scripts/**/*.py"]
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle errors
+    "F", # Pyflakes
+    "W", # pycodestyle warnings
+    "I", # isort
+    "UP", # pyupgrade - modern Python syntax
+    "B", # flake8-bugbear - catches common bugs
+    "ASYNC", # flake8-async - async antipatterns
+    "PTH", # flake8-use-pathlib
+    "T20", # flake8-print - no print statements
+    "LOG", # flake8-logging - logging best practices
+    "RUF", # Ruff-specific
+    "PERF", # Perflint - performance anti-patterns
+    "PT", # flake8-pytest-style - pytest best practices
+    "RSE", # flake8-raise - raise statement issues
+    "C4", # flake8-comprehensions - comprehension best practices
+]
+ignore = [
+    "E501", # Line length - formatter handles this
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The init script is a CLI: printing to stdout is its user interface.
+"scripts/init_repo.py" = ["T20"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

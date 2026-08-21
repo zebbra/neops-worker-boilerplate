@@ -1,0 +1,24 @@
+# The Dockerfile COPYs explicit paths only, but keep the context minimal and
+# make sure secrets and local state can never leak into a layer.
+.git
+.venv
+.venv*/
+.env
+.env.*
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.idea/
+.vscode/
+build/
+dist/
+*.egg-info/
+tests/
+scripts/
+.github/
+Makefile
+.dockerignore
+Dockerfile
+workflows/

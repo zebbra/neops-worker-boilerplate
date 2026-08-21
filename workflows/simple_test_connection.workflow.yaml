@@ -1,0 +1,22 @@
+# Connectivity smoke test: fan out over every device in scope and run this
+# repo's test_connection function block against each one. Read-only.
+#
+# Register it against a running engine via POST /workflow-definition/publish —
+# see "Registering the workflow" in the README. Published versions are
+# immutable: editing this file without bumping majorVersion/minorVersion/
+# patchVersion makes the publish fail with a 409.
+label: simple_test_connection
+name: simple_test_connection
+package: wf.my_worker.example.io
+majorVersion: 0
+minorVersion: 1
+patchVersion: 0
+seedEntity: device
+type: workflow
+description: "Connect to each device in scope and read basic device information."
+
+steps:
+  - type: functionBlock
+    label: test_connection
+    functionBlock: "fb.my_worker.example.io/test_connection:0.1.0"
+    runOn: device

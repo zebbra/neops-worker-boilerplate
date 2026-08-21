@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  IMAGE_NAME: "my-worker"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint-test:
+    name: Lint, Audit, type-check & tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - uses: actions/setup-python@v5
+        id: setup_python
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Lint & Format check
+        run: |
+          uv run ruff format --check
+          uv run ruff check
+
+      - name: Security audit (runtime deps)
+        run: make audit
+
+      - name: Type-check (pyrefly)
+        run: make typeCheck
+
+      - name: Tests
+        run: uv run pytest -q
+
+      - name: Summary
+        run: echo "### Lint/type-check passed ✅" >> $GITHUB_STEP_SUMMARY
+
+  docker:
+    name: Build Docker (no push)
+    needs: lint-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker
+        run: docker build -t ${{ env.IMAGE_NAME }}:ci .
