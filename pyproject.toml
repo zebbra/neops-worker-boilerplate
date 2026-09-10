@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
-    "neops_worker_sdk==0.2.0b4",
+    "neops_worker_sdk==0.2.0b5",
     # The SDK's Cisco IOS scrapli config operations need scrapli-cfg, but no
     # PyPI release of scrapli-cfg is compatible with scrapli>=2026.2.20, and
     # PyPI forbids direct-URL requirements in published metadata — so the SDK

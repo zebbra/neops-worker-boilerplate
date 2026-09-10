@@ -1184,7 +1184,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "neops-worker-sdk", specifier = "==0.2.0b4" },
+    { name = "neops-worker-sdk", specifier = "==0.2.0b5" },
     { name = "scrapli-cfg", git = "https://github.com/scrapli/scrapli_cfg?rev=2026.06.25" },
 ]
 
@@ -1236,9 +1236,10 @@ sdist = { url = "https://files.pythonhosted.org/packages/c2/fb/29dbb4987f81d7932
 
 [[package]]
 name = "neops-worker-sdk"
-version = "0.2.0b4"
+version = "0.2.0b5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "asyncssh" },
     { name = "cryptography" },
     { name = "hier-config" },
     { name = "httpx" },
@@ -1256,14 +1257,14 @@ dependencies = [
     { name = "scrapli", extra = ["asyncssh"] },
     { name = "textfsm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f7/9b/eb1cdf5a40f3275784f8c7cbb7233e0a1a052a503112004f4542f909dfab/neops_worker_sdk-0.2.0b4.tar.gz", hash = "sha256:b6d15579a3f5af4b6379d3370662bf11cb52bcb6aed27f80b06370897dfa0d18", size = 107815, upload-time = "2026-08-21T08:02:44.57Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/62/45/d365d15c2530a48147ae3f84ee69dfd46631d01785b265feac4177898d4c/neops_worker_sdk-0.2.0b5.tar.gz", hash = "sha256:1d23c45bbeb4e1402e1246cc40ad0a40bd27b50c8594b9f3aad5d3dec13f2ce6", size = 107857, upload-time = "2026-09-10T20:13:28.179Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/21/841c6e27a13c52cfa5bca3391a0322044a2526fc6363a2bbd6e0220212a5/neops_worker_sdk-0.2.0b4-py3-none-any.whl", hash = "sha256:beb42fbce3bbb18df0c4e92df7c64e4af8ecf36e9ab77248fb66ab0f19b14eba", size = 157387, upload-time = "2026-08-21T08:02:43.241Z" },
+    { url = "https://files.pythonhosted.org/packages/9b/19/647bf971271a1f9d9fa4577fb7a30859a3c9f3f468d68ab021f0dd963b1c/neops_worker_sdk-0.2.0b5-py3-none-any.whl", hash = "sha256:ad7352b7e9102be1364c49744abeb0a331ca963dce1119c9cdfde1cdda3e06a6", size = 157398, upload-time = "2026-09-10T20:13:26.574Z" },
 ]
 
 [[package]]
 name = "neops-workflow-engine-client"
-version = "0.43.0b1"
+version = "0.43.0b2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1273,9 +1274,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/10/db552e77a94fcdb362508076ffedf2e5be03bf204ffcd2f582bc5c972b04/neops_workflow_engine_client-0.43.0b1.tar.gz", hash = "sha256:4c053e7e4ea073c7625e3c7e9e204a739c9d35856302d91adda3e4b973a65318", size = 63702, upload-time = "2026-07-23T07:28:38.074Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3a/ff/d6f3ec8e67eae001ec89aa8c03aadd165c2e6edd92671e862a05513e7c29/neops_workflow_engine_client-0.43.0b2.tar.gz", hash = "sha256:d6d1075c231b91650a7648efc059b6e7dbd004afd4bb56a2f9f7c8c4c4a0da3c", size = 77424, upload-time = "2026-09-10T20:00:14.779Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/74/ac/f9aa486f5c55324470e0c4cc8f1252b7164972e96a8e8952b71070c95ce1/neops_workflow_engine_client-0.43.0b1-py3-none-any.whl", hash = "sha256:5f9705dc6c386c621624f6c2fc66f34acfff1831691d0f7cf9276ca66d9d431d", size = 156870, upload-time = "2026-07-23T07:28:36.602Z" },
+    { url = "https://files.pythonhosted.org/packages/d8/84/d67788686577f4df10933e92ac0148e2a3cb47eb39a3fbf1731d9d72a560/neops_workflow_engine_client-0.43.0b2-py3-none-any.whl", hash = "sha256:ef22a560892c321a56f61c511dd5ceac4a7e9c78b9d4983b80d1742ecfa5c8b8", size = 192379, upload-time = "2026-09-10T20:00:13.259Z" },
 ]
 
 [[package]]
