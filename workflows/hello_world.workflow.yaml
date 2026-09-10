@@ -1,0 +1,39 @@
+# Smallest possible end-to-end check: no devices, no CMS entities, no locks.
+# If this completes, the worker is registered with the engine and executing
+# jobs — which makes it the first thing to run when a new worker won't pick up
+# work, before blaming a function block.
+#
+# Register it against a running engine via POST /workflow-definition/publish —
+# see "Registering the workflow" in the README. Published versions are
+# immutable: editing this file without bumping majorVersion/minorVersion/
+# patchVersion makes the publish fail with a 409.
+label: hello_world
+name: hello_world
+package: wf.my_worker.example.io
+majorVersion: 0
+minorVersion: 1
+patchVersion: 0
+seedEntity: global
+type: workflow
+description: "Compose a greeting. Touches nothing — proves the worker executes jobs."
+
+parameterSchema:
+  type: object
+  properties:
+    greeting:
+      type: string
+      description: "The greeting to use."
+      default: "Hello"
+    name:
+      type: string
+      description: "Who to greet."
+      default: "NeOps"
+
+steps:
+  - type: functionBlock
+    label: greet
+    functionBlock: "fb.my_worker.example.io/hello_world:0.1.0"
+    runOn: global
+    parameters:
+      greeting: "{{ parameters.greeting }}"
+      name: "{{ parameters.name }}"
