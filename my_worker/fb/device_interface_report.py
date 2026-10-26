@@ -8,6 +8,7 @@ from neops_worker_sdk.function_block.function_block import (
 )
 from neops_worker_sdk.registry.decorator import register_function_block
 from neops_worker_sdk.registry.registration import Registration
+from neops_worker_sdk.workflow import EntityType
 from neops_worker_sdk.workflow.workflow_context import WorkflowContext
 from neops_workflow_engine_client import EntityAcquireByElasticQuery
 from pydantic import Field
@@ -65,7 +66,7 @@ class DeviceInterfaceReport(FunctionBlock[DeviceInterfaceReportParameters, Devic
         acquires = [
             EntityAcquireByElasticQuery(
                 type="elastic",
-                entity="interface",
+                entity=EntityType.INTERFACE,
                 # ⚠️ Known-limited placeholder, mirrored from the SDK's own
                 # base FBs: this acquires the interfaces of device id 1
                 # regardless of which device the FB actually runs on. The
