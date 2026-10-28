@@ -25,7 +25,7 @@ ENV UV_LINK_MODE=copy
 # (deps-only first, for layer caching)
 RUN uv sync --frozen --no-dev --no-install-project
 
-# The function blocks (fb.my-worker.example.io/*) live here. Without them the
+# The function blocks (fb.my_worker.example.io/*) live here. Without them the
 # image has no function blocks to register — see DIR_FUNCTION_BLOCKS below,
 # which is resolved relative to WORKDIR (`my_worker/fb` -> /app/my_worker/fb).
 COPY ./my_worker my_worker/
