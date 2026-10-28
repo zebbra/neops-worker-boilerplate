@@ -8,7 +8,7 @@ Usage (via make):
 Renames the placeholder python package directory to ``<name>/`` and rewrites the
 snake_case (``<placeholder>``) and kebab-case (``<place-holder>``) tokens across
 all git-tracked text files: pyproject name, README title, Dockerfile,
-.env.dist, CI workflow, FB package ``fb.<place-holder>.example.io``, imports
+.env.dist, CI workflow, FB package ``fb.<placeholder>.example.io``, imports
 and tests. ``uv.lock`` is not rewritten — it is regenerated with ``uv lock``
 at the end. Everything is left uncommitted for review.
 
