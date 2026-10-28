@@ -27,8 +27,7 @@ audit:
 	# Scope to the runtime dependency closure. pip-audit pulls `pip-api`
 	# -> `pip`, and scanning the audit toolchain itself produces noise
 	# without security signal. Exporting `--no-dev` requirements first
-	# scopes the scan to what actually ships. pip-audit skips the
-	# scrapli-cfg git requirement itself.
+	# scopes the scan to what actually ships.
 	uv export --no-dev --no-hashes -o /tmp/my-worker-prod-reqs.txt
 	uv run pip-audit --disable-pip --no-deps --skip-editable \
 		-r /tmp/my-worker-prod-reqs.txt

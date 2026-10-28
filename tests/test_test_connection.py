@@ -47,10 +47,9 @@ async def test_fails_without_device_in_context() -> None:
     result = await FbTestConnection().execute_function_block(
         params=Params(),
         context=create_workflow_context(run_on="global"),
-        propagate_exceptions=True,
     )
     assert not result.success
-    assert "No device found" in result.message
+    assert "runs on 'device'" in result.message
 
 
 async def test_maps_device_information_into_result(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -1,7 +1,8 @@
 # my-worker
 
 Boilerplate for a NeOps worker that ships custom function blocks, built on
-[`neops_worker_sdk`](https://pypi.org/project/neops-worker-sdk/) (pinned to `0.2.0b4`).
+[`neops_worker_sdk`](https://pypi.org/project/neops-worker-sdk/) (exact-pinned in
+`pyproject.toml`).
 
 A function block ("FB") is a typed, testable unit of automation: Pydantic
 parameters in, Pydantic result out, executed by a worker process that polls the
@@ -70,13 +71,29 @@ Three examples live in `my_worker/fb/`, in ascending order of ceremony:
 - **`device_interface_report.py`** — a device-scoped FB showing `acquire()`
   (requesting the device's interfaces into the job context with an
   `EntityAcquireByElasticQuery`), parameter validation via Pydantic `Field`
-  constraints, and reading entities from the `WorkflowContext` — all without
-  opening a device connection.
+  constraints, and reading entities from the `DeviceWorkflowContext` — all
+  without opening a device connection.
 - **`connection_test.py`** — a device-scoped FB that actually opens a
   connection: `NetworkDeviceDiscoveryProxy.connect(device, "ssh")` +
   `get_information()`, wrapped in `@run_in_thread` because netmiko I/O is
   blocking. Run it via the `simple_test_connection` workflow (below) to prove
   worker-to-device connectivity end to end.
+
+A block that runs on one entity subclasses the matching typed base —
+`DeviceFunctionBlock`, `InterfaceFunctionBlock` or `GroupFunctionBlock` — and
+leaves `run_on` out of its `Registration`: the base sets it. `run()` then gets a
+narrowed context (`DeviceWorkflowContext`, …) whose entity is never `None`, and
+the SDK fails the job before `run()` when the job carries no such entity. Only a
+block with no entity, like `hello_world`, uses plain `FunctionBlock` with
+`run_on="global"`.
+
+Log through `self.logger` with `{}` placeholders
+(`self.logger.info("Probing {}", device.ip)`). While a job runs, every SDK log
+line, including the connection proxy's, already carries the job and entity
+context, so there is no need to hand `logger=self.logger` to a proxy. Use
+`self.logger.child("Name", key=value)` to name one part of a block or add
+fields, and `neops_worker_sdk.logger.log_context(...)` to add fields to every
+line inside a `with` block.
 
 Every FB is addressed by `"<package>/<name>:<major.minor.patch>"`, e.g.
 `fb.my_worker.example.io/hello_world:0.1.0`. Workflow definitions pin that
@@ -127,16 +144,18 @@ editing in place (and keep the FB identifier in the step in sync with the FB's
 
 ## Dependency notes
 
-- **`neops_worker_sdk==0.2.0b4`** is exact-pinned: the SDK is in beta and its
+- **`neops_worker_sdk`** is exact-pinned: the SDK is in beta and its
   generated engine client (`neops_workflow_engine_client`) must match the
   engine's REST contract. Bump the pin consciously, not via lockfile drift.
-- **`scrapli-cfg` git pin**: the SDK's Cisco IOS scrapli config operations need
-  scrapli-cfg, but no PyPI release of it is compatible with
-  `scrapli>=2026.2.20`, and PyPI forbids git URLs in published metadata — so
-  the SDK cannot carry the pin for you (it keeps it in a non-published `fb`
-  dependency group). An end project like this one can, and this dependency
-  mirrors exactly that group. If none of your FBs touch IOS devices, you can
-  drop it.
+- **scrapli 2**: the SDK's scrapli connections are built on scrapli 2 (the
+  `scrapli2` distribution). A raw scrapli connection is a `scrapli.Cli`:
+  call `send_input(input_=...)` (not `send_command()`); on its result, parse
+  with `textfsm_parse()` and read the raw output from `result_raw`. The IOS
+  candidate-config handling scrapli-cfg used to provide now ships inside the
+  SDK, so no scrapli-cfg dependency is needed. `scrapli2` installs into the
+  same `scrapli` import package as scrapli 1, so a venv upgraded in place from
+  an older SDK can be left with a broken `scrapli` package; repair it with
+  `uv sync --reinstall-package scrapli2`.
 
 ## Layout
 
