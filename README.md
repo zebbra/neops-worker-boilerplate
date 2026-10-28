@@ -1,7 +1,8 @@
 # my-worker
 
 Boilerplate for a NeOps worker that ships custom function blocks, built on
-[`neops_worker_sdk`](https://pypi.org/project/neops-worker-sdk/) (pinned to `0.2.0b4`).
+[`neops_worker_sdk`](https://pypi.org/project/neops-worker-sdk/) (exact-pinned in
+`pyproject.toml`).
 
 A function block ("FB") is a typed, testable unit of automation: Pydantic
 parameters in, Pydantic result out, executed by a worker process that polls the
@@ -127,16 +128,18 @@ editing in place (and keep the FB identifier in the step in sync with the FB's
 
 ## Dependency notes
 
-- **`neops_worker_sdk==0.2.0b4`** is exact-pinned: the SDK is in beta and its
+- **`neops_worker_sdk`** is exact-pinned: the SDK is in beta and its
   generated engine client (`neops_workflow_engine_client`) must match the
   engine's REST contract. Bump the pin consciously, not via lockfile drift.
-- **`scrapli-cfg` git pin**: the SDK's Cisco IOS scrapli config operations need
-  scrapli-cfg, but no PyPI release of it is compatible with
-  `scrapli>=2026.2.20`, and PyPI forbids git URLs in published metadata — so
-  the SDK cannot carry the pin for you (it keeps it in a non-published `fb`
-  dependency group). An end project like this one can, and this dependency
-  mirrors exactly that group. If none of your FBs touch IOS devices, you can
-  drop it.
+- **scrapli 2**: the SDK's scrapli connections are built on scrapli 2 (the
+  `scrapli2` distribution). A raw scrapli connection is a `scrapli.Cli`:
+  call `send_input(input_=...)` (not `send_command()`); on its result, parse
+  with `textfsm_parse()` and read the raw output from `result_raw`. The IOS
+  candidate-config handling scrapli-cfg used to provide now ships inside the
+  SDK, so no scrapli-cfg dependency is needed. `scrapli2` installs into the
+  same `scrapli` import package as scrapli 1, so a venv upgraded in place from
+  an older SDK can be left with a broken `scrapli` package; repair it with
+  `uv sync --reinstall-package scrapli2`.
 
 ## Layout
 
