@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 
 dependencies = [
-    "neops_worker_sdk==0.2.0b7",
+    "neops_worker_sdk==0.2.0b8",
 ]
 
 [dependency-groups]
