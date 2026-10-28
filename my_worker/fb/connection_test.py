@@ -3,7 +3,7 @@ from neops_worker_sdk.connection.capabilities.network_device_information import 
 from neops_worker_sdk.connection.proxy import NetworkDeviceDiscoveryProxy
 from neops_worker_sdk.function_block.acquire_params import AcquireParams
 from neops_worker_sdk.function_block.function_block import (
-    FunctionBlock,
+    DeviceFunctionBlock,
     FunctionBlockAcquireResult,
     FunctionBlockParams,
     FunctionBlockResult,
@@ -11,7 +11,7 @@ from neops_worker_sdk.function_block.function_block import (
 )
 from neops_worker_sdk.registry.decorator import register_function_block
 from neops_worker_sdk.registry.registration import Registration
-from neops_worker_sdk.workflow.workflow_context import WorkflowContext
+from neops_worker_sdk.workflow.workflow_context import DeviceWorkflowContext
 
 # Not named test_connection.py: the worker's FB discovery skips test_* files.
 from neops_workflow_engine_client import DeviceTypeDto
@@ -34,7 +34,6 @@ class TestConnectionResult(FunctionBlockResultData):
         name="test_connection",
         description="Connect to the device and read basic device information, proving connectivity end to end.",
         package="fb.my_worker.example.io",
-        run_on="device",
         fb_type="execute",
         param_cls=TestConnectionParameters,
         result_cls=TestConnectionResult,
@@ -50,7 +49,7 @@ class TestConnectionResult(FunctionBlockResultData):
         is_pure=True,
     )
 )
-class TestConnection(FunctionBlock[TestConnectionParameters, TestConnectionResult]):
+class TestConnection(DeviceFunctionBlock[TestConnectionParameters, TestConnectionResult]):
     async def acquire(self, params: AcquireParams[TestConnectionParameters]) -> FunctionBlockAcquireResult:
         del params
         return FunctionBlockAcquireResult(success=True, message="No acquires required.", acquires=None)
@@ -58,17 +57,10 @@ class TestConnection(FunctionBlock[TestConnectionParameters, TestConnectionResul
     async def run(
         self,
         params: TestConnectionParameters,
-        context: WorkflowContext,
+        context: DeviceWorkflowContext,
     ) -> FunctionBlockResult[TestConnectionResult]:
         del params
         device = context.device
-        if device is None:
-            return FunctionBlockResult(
-                success=False,
-                message="No device found in context for TestConnection function block.",
-                data=None,
-            )
-
         # Connection failures propagate: the SDK's job wrapper turns the raised
         # exception into a failed job result with the error message.
         info = await self._read_information(device)
@@ -98,6 +90,7 @@ class TestConnection(FunctionBlock[TestConnectionParameters, TestConnectionResul
         blocking, hence `@run_in_thread` — same pattern as the SDK's
         `global_discover_network`.
         """
-        self.logger.info(f"Probing {device.ip} ({device.platform.short_name if device.platform else 'unknown'})")
-        with NetworkDeviceDiscoveryProxy.connect(device, "ssh", fallback_to_default=True, logger=self.logger) as proxy:
+        platform = device.platform.short_name if device.platform else "unknown"
+        self.logger.info("Probing {} ({})", device.ip, platform)
+        with NetworkDeviceDiscoveryProxy.connect(device, "ssh", fallback_to_default=True) as proxy:
             return proxy.get_information()

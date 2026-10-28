@@ -1,6 +1,6 @@
 from neops_worker_sdk.function_block.acquire_params import AcquireParams
 from neops_worker_sdk.function_block.function_block import (
-    FunctionBlock,
+    DeviceFunctionBlock,
     FunctionBlockAcquireResult,
     FunctionBlockParams,
     FunctionBlockResult,
@@ -9,17 +9,16 @@ from neops_worker_sdk.function_block.function_block import (
 from neops_worker_sdk.registry.decorator import register_function_block
 from neops_worker_sdk.registry.registration import Registration
 from neops_worker_sdk.workflow import EntityType
-from neops_worker_sdk.workflow.workflow_context import WorkflowContext
-from neops_workflow_engine_client import EntityAcquireByElasticQuery
+from neops_worker_sdk.workflow.workflow_context import DeviceWorkflowContext
+from neops_workflow_engine_client import EntityAcquireByElasticQuery, InterfaceStateEnum
 from pydantic import Field
 
 
 class DeviceInterfaceReportParameters(FunctionBlockParams):
-    state_filter: str | None = Field(
+    state_filter: InterfaceStateEnum | None = Field(
         title="State filter",
-        description="Only count interfaces in this state (e.g. 'UP', 'DOWN'). Counts every interface when unset.",
+        description="Only count interfaces in this state. Counts every interface when unset.",
         default=None,
-        min_length=1,
     )
     max_names: int = Field(
         title="Maximum names",
@@ -41,7 +40,6 @@ class DeviceInterfaceReportResult(FunctionBlockResultData):
         name="device_interface_report",
         description="Summarise a device's interfaces from the workflow context. No device connection.",
         package="fb.my_worker.example.io",
-        run_on="device",
         fb_type="execute",
         param_cls=DeviceInterfaceReportParameters,
         result_cls=DeviceInterfaceReportResult,
@@ -51,13 +49,13 @@ class DeviceInterfaceReportResult(FunctionBlockResultData):
             "filtered by state; no device connection. Caveat: its acquire() query is a placeholder pinned "
             "to device.id 1 — see the comment in the source."
         ),
-        version=(0, 1, 0),
+        version=(0, 2, 0),
         deprecated=False,
         is_idempotent=True,
         is_pure=True,
     )
 )
-class DeviceInterfaceReport(FunctionBlock[DeviceInterfaceReportParameters, DeviceInterfaceReportResult]):
+class DeviceInterfaceReport(DeviceFunctionBlock[DeviceInterfaceReportParameters, DeviceInterfaceReportResult]):
     async def acquire(self, params: AcquireParams[DeviceInterfaceReportParameters]) -> FunctionBlockAcquireResult:
         # Parameters fed from earlier steps' results are not resolved at ACQUIRE
         # time (see AcquireParams); this block only needs the step's entity, so
@@ -89,16 +87,10 @@ class DeviceInterfaceReport(FunctionBlock[DeviceInterfaceReportParameters, Devic
     async def run(
         self,
         params: DeviceInterfaceReportParameters,
-        context: WorkflowContext,
+        context: DeviceWorkflowContext,
     ) -> FunctionBlockResult[DeviceInterfaceReportResult]:
         device = context.device
-        if device is None:
-            return FunctionBlockResult(
-                success=False,
-                message="No device found in context for DeviceInterfaceReport function block.",
-                data=None,
-            )
-        self.logger.debug(f"Running DeviceInterfaceReport on device: {device.hostname}")
+        self.logger.debug("Running DeviceInterfaceReport on device: {}", device.hostname)
 
         interfaces = context.interfaces if context.interfaces is not None else []
         matching = [

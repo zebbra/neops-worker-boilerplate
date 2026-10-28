@@ -61,7 +61,7 @@ class HelloWorld(FunctionBlock[HelloWorldParameters, HelloWorldResult]):
     ) -> FunctionBlockResult[HelloWorldResult]:
         del context
         message = f"{params.greeting}, {params.name}!"
-        self.logger.info(f"hello_world: {message}")
+        self.logger.info("hello_world: {}", message)
         return FunctionBlockResult(
             success=True,
             message="Greeting composed successfully.",
