@@ -3,9 +3,10 @@
 import pytest
 from neops_worker_sdk.function_block.acquire_params import AcquireParams
 from neops_worker_sdk.testing.factories.context_factory import create_workflow_context
+from neops_worker_sdk.testing.factories.job_meta_factory import create_job_meta
 from neops_worker_sdk.workflow import EntityType
 from neops_worker_sdk.workflow.workflow_context import WorkflowContext
-from neops_workflow_engine_client import DeviceTypeDto, InterfaceStateEnum, InterfaceTypeDto
+from neops_workflow_engine_client import DeviceTypeDto, InterfaceStateEnum, InterfaceTypeDto, JobType
 from pydantic import ValidationError
 
 from my_worker.fb.device_interface_report import (
@@ -31,6 +32,7 @@ async def test_report_counts_all_interfaces() -> None:
     result = await DeviceInterfaceReport().execute_function_block(
         params=DeviceInterfaceReportParameters(),
         context=device_context(),
+        meta=create_job_meta(),
         propagate_exceptions=True,
     )
     assert result.success
@@ -44,6 +46,7 @@ async def test_report_filters_by_state() -> None:
     result = await DeviceInterfaceReport().execute_function_block(
         params=DeviceInterfaceReportParameters(state_filter=InterfaceStateEnum.UP),
         context=device_context(),
+        meta=create_job_meta(),
         propagate_exceptions=True,
     )
     assert result.success
@@ -56,6 +59,7 @@ async def test_report_caps_listed_names() -> None:
     result = await DeviceInterfaceReport().execute_function_block(
         params=DeviceInterfaceReportParameters(max_names=1),
         context=device_context(),
+        meta=create_job_meta(),
         propagate_exceptions=True,
     )
     assert result.success
@@ -70,7 +74,7 @@ async def test_acquire_requests_interfaces() -> None:
         unresolved=frozenset(),
         raw={},
     )
-    acquire_result = await DeviceInterfaceReport().acquire(params)
+    acquire_result = await DeviceInterfaceReport().acquire(params, create_job_meta(job_type=JobType.ACQUIRE))
     assert acquire_result.success
     assert acquire_result.acquires is not None
     assert len(acquire_result.acquires) == 1

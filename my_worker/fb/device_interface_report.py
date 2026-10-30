@@ -6,6 +6,7 @@ from neops_worker_sdk.function_block.function_block import (
     FunctionBlockResult,
     FunctionBlockResultData,
 )
+from neops_worker_sdk.function_block.job_meta import JobMeta
 from neops_worker_sdk.registry.decorator import register_function_block
 from neops_worker_sdk.registry.registration import Registration
 from neops_worker_sdk.workflow import EntityType
@@ -56,11 +57,13 @@ class DeviceInterfaceReportResult(FunctionBlockResultData):
     )
 )
 class DeviceInterfaceReport(DeviceFunctionBlock[DeviceInterfaceReportParameters, DeviceInterfaceReportResult]):
-    async def acquire(self, params: AcquireParams[DeviceInterfaceReportParameters]) -> FunctionBlockAcquireResult:
+    async def acquire(
+        self, params: AcquireParams[DeviceInterfaceReportParameters], meta: JobMeta
+    ) -> FunctionBlockAcquireResult:
         # Parameters fed from earlier steps' results are not resolved at ACQUIRE
         # time (see AcquireParams); this block only needs the step's entity, so
         # no branching on `params.unresolved` is required here.
-        del params
+        del params, meta
         acquires = [
             EntityAcquireByElasticQuery(
                 type="elastic",
@@ -88,7 +91,9 @@ class DeviceInterfaceReport(DeviceFunctionBlock[DeviceInterfaceReportParameters,
         self,
         params: DeviceInterfaceReportParameters,
         context: DeviceWorkflowContext,
+        meta: JobMeta,
     ) -> FunctionBlockResult[DeviceInterfaceReportResult]:
+        del meta
         device = context.device
         self.logger.debug("Running DeviceInterfaceReport on device: {}", device.hostname)
 

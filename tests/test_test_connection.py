@@ -14,6 +14,7 @@ import pytest
 from neops_worker_sdk.connection.capabilities.network_device_information import InformationResult
 from neops_worker_sdk.registry import registry
 from neops_worker_sdk.testing.factories.context_factory import create_workflow_context
+from neops_worker_sdk.testing.factories.job_meta_factory import create_job_meta
 from neops_worker_sdk.workflow.workflow_context import WorkflowContext
 from neops_workflow_engine_client import DeviceTypeDto
 
@@ -47,6 +48,7 @@ async def test_fails_without_device_in_context() -> None:
     result = await FbTestConnection().execute_function_block(
         params=Params(),
         context=create_workflow_context(run_on="global"),
+        meta=create_job_meta(),
     )
     assert not result.success
     assert "runs on 'device'" in result.message
@@ -75,6 +77,7 @@ async def test_maps_device_information_into_result(monkeypatch: pytest.MonkeyPat
     result = await FbTestConnection().execute_function_block(
         params=Params(),
         context=device_context(),
+        meta=create_job_meta(network_zone="zone-b"),
         propagate_exceptions=True,
     )
     assert result.success
@@ -83,3 +86,4 @@ async def test_maps_device_information_into_result(monkeypatch: pytest.MonkeyPat
     assert result.data.vendor == "FRRouting"
     assert result.data.software_release == "10.0"
     assert "FRRouting 10.0" in result.message
+    assert "zone-b" in result.message

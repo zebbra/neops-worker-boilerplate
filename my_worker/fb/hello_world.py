@@ -6,6 +6,7 @@ from neops_worker_sdk.function_block.function_block import (
     FunctionBlockResult,
     FunctionBlockResultData,
 )
+from neops_worker_sdk.function_block.job_meta import JobMeta
 from neops_worker_sdk.registry.decorator import register_function_block
 from neops_worker_sdk.registry.registration import Registration
 from neops_worker_sdk.workflow.workflow_context import WorkflowContext
@@ -50,16 +51,17 @@ class HelloWorldResult(FunctionBlockResultData):
     )
 )
 class HelloWorld(FunctionBlock[HelloWorldParameters, HelloWorldResult]):
-    async def acquire(self, params: AcquireParams[HelloWorldParameters]) -> FunctionBlockAcquireResult:
-        del params
+    async def acquire(self, params: AcquireParams[HelloWorldParameters], meta: JobMeta) -> FunctionBlockAcquireResult:
+        del params, meta
         return FunctionBlockAcquireResult(success=True, message="No acquires required.", acquires=None)
 
     async def run(
         self,
         params: HelloWorldParameters,
         context: WorkflowContext,
+        meta: JobMeta,
     ) -> FunctionBlockResult[HelloWorldResult]:
-        del context
+        del context, meta
         message = f"{params.greeting}, {params.name}!"
         self.logger.info("hello_world: {}", message)
         return FunctionBlockResult(
