@@ -79,6 +79,7 @@ async def test_acquire_requests_interfaces() -> None:
     assert acquire_result.acquires is not None
     assert len(acquire_result.acquires) == 1
     assert acquire_result.acquires[0].entity == EntityType.INTERFACE
+    assert acquire_result.acquires[0].query == "device.id: {{ context.device.id }}"
 
 
 def test_report_rejects_an_unknown_state_filter() -> None:

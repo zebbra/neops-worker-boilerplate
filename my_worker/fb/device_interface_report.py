@@ -47,10 +47,9 @@ class DeviceInterfaceReportResult(FunctionBlockResultData):
         # NB: the engine stores this in a varchar(255) column — keep it short.
         markdown_helptext=(
             "Example FB: counts and lists the device's interfaces from the workflow context, optionally "
-            "filtered by state; no device connection. Caveat: its acquire() query is a placeholder pinned "
-            "to device.id 1 — see the comment in the source."
+            "filtered by state; no device connection."
         ),
-        version=(0, 2, 0),
+        version=(0, 2, 1),
         deprecated=False,
         is_idempotent=True,
         is_pure=True,
@@ -68,15 +67,9 @@ class DeviceInterfaceReport(DeviceFunctionBlock[DeviceInterfaceReportParameters,
             EntityAcquireByElasticQuery(
                 type="elastic",
                 entity=EntityType.INTERFACE,
-                # ⚠️ Known-limited placeholder, mirrored from the SDK's own
-                # base FBs: this acquires the interfaces of device id 1
-                # regardless of which device the FB actually runs on. The
-                # limitation is tracked in the SDK at
-                # neops/fb/base/network_device/get_interfaces.py (see the
-                # commented-out acquires and TODOs there). Replace the query
-                # with one that fits your data model before copying this
-                # pattern into a production FB.
-                query="device.id: 1",
+                # Rendered per device before the query runs, so each job locks
+                # only the interfaces of the device it reports on.
+                query="device.id: {{ context.device.id }}",
                 assertNotEmpty=False,
                 description="Acquire the interfaces of the device being reported on.",
             )
