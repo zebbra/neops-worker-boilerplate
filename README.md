@@ -150,7 +150,27 @@ print(urllib.request.urlopen(req).status)
 immutable: a `409` means this version already exists with different content —
 bump `majorVersion`/`minorVersion`/`patchVersion` in the YAML instead of
 editing in place (and keep the FB identifier in the step in sync with the FB's
-`Registration.version`).
+`Registration.version`). `tests/test_workflows.py` fails when a workflow here
+names a block this repo does not register at that version.
+
+## The `device_interface_report` workflow
+
+`workflows/device_interface_report.workflow.yaml` is a device-scoped workflow
+whose single step runs `fb.my_worker.example.io/device_interface_report:0.2.1`
+on every device in scope. Each job locks the interfaces of its device and
+reports how many it has and their names, read from the workflow context; it
+opens no device connection, so it works on any device the CMS already holds
+with its interfaces (in `neops-lab`, after `make local-lab-discover`).
+
+1. `make run`, with this worker serving the devices' network zone
+   (`NEOPS_WORKER_NETWORK_ZONES` in `.env`; unset serves `default`).
+2. Register the workflow as above, with
+   `workflows/device_interface_report.workflow.yaml` as the file.
+3. Execute it from the engine UI (`localhost:3031` in the lab) on the devices to
+   report on. `max_names` (default 25) caps how many names each device lists.
+
+Each job runs in its device's zone, so a device in another zone waits for a
+worker that serves that zone and registers this block.
 
 ## Dependency notes
 

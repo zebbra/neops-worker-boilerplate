@@ -1,0 +1,36 @@
+# Per-device interface summary: fan out over every device in scope and run
+# this repo's device_interface_report function block against each one. It
+# reads the interfaces from the workflow context, locks the interfaces of
+# each device it reports on, and opens no device connection.
+#
+# Register it against a running engine via POST /workflow-definition/publish —
+# see "Registering the workflow" in the README. Published versions are
+# immutable: editing this file without bumping majorVersion/minorVersion/
+# patchVersion makes the publish fail with a 409.
+label: device_interface_report
+name: device_interface_report
+package: wf.my_worker.example.io
+majorVersion: 0
+minorVersion: 1
+patchVersion: 0
+seedEntity: device
+type: workflow
+description: "Count and list the interfaces of each device in scope."
+
+parameterSchema:
+  type: object
+  properties:
+    max_names:
+      type: integer
+      description: "Cap on how many interface names each device lists."
+      default: 25
+      minimum: 1
+      maximum: 1000
+
+steps:
+  - type: functionBlock
+    label: interface_report
+    functionBlock: "fb.my_worker.example.io/device_interface_report:0.2.1"
+    runOn: device
+    parameters:
+      max_names: "{{ parameters.max_names }}"
