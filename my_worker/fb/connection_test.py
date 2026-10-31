@@ -9,6 +9,7 @@ from neops_worker_sdk.function_block.function_block import (
     FunctionBlockResult,
     FunctionBlockResultData,
 )
+from neops_worker_sdk.function_block.job_meta import JobMeta
 from neops_worker_sdk.registry.decorator import register_function_block
 from neops_worker_sdk.registry.registration import Registration
 from neops_worker_sdk.workflow.workflow_context import DeviceWorkflowContext
@@ -50,14 +51,17 @@ class TestConnectionResult(FunctionBlockResultData):
     )
 )
 class TestConnection(DeviceFunctionBlock[TestConnectionParameters, TestConnectionResult]):
-    async def acquire(self, params: AcquireParams[TestConnectionParameters]) -> FunctionBlockAcquireResult:
-        del params
+    async def acquire(
+        self, params: AcquireParams[TestConnectionParameters], meta: JobMeta
+    ) -> FunctionBlockAcquireResult:
+        del params, meta
         return FunctionBlockAcquireResult(success=True, message="No acquires required.", acquires=None)
 
     async def run(
         self,
         params: TestConnectionParameters,
         context: DeviceWorkflowContext,
+        meta: JobMeta,
     ) -> FunctionBlockResult[TestConnectionResult]:
         del params
         device = context.device
@@ -65,7 +69,10 @@ class TestConnection(DeviceFunctionBlock[TestConnectionParameters, TestConnectio
         # exception into a failed job result with the error message.
         info = await self._read_information(device)
 
-        message = f"Connected to {device.hostname or device.ip}: {info.vendor} {info.software_release}"
+        message = (
+            f"Connected to {device.hostname or device.ip} from network zone {meta.network_zone}: "
+            f"{info.vendor} {info.software_release}"
+        )
         self.logger.info(message)
         return FunctionBlockResult(
             success=True,

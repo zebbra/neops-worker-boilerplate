@@ -79,6 +79,14 @@ Three examples live in `my_worker/fb/`, in ascending order of ceremony:
   blocking. Run it via the `simple_test_connection` workflow (below) to prove
   worker-to-device connectivity end to end.
 
+Every block implements `run(params, context, meta)` and `acquire(params, meta)`
+(and `rollback(params, context, forward, meta)` when it is registered
+`reversible=True`). `meta` is the job's `JobMeta`
+(`neops_worker_sdk.function_block.job_meta`): the network zone the job runs in
+(`meta.network_zone`) and why (`meta.network_zone_source`), the workflow step,
+the worker and the job's own identity. A block that does not use it still
+declares it; `connection_test` names the zone in its result message.
+
 A block that runs on one entity subclasses the matching typed base —
 `DeviceFunctionBlock`, `InterfaceFunctionBlock` or `GroupFunctionBlock` — and
 leaves `run_on` out of its `Registration`: the base sets it. `run()` then gets a
@@ -105,10 +113,12 @@ The worker discovers FBs by scanning the directories in `DIR_FUNCTION_BLOCKS`
 that tree, the `@register_function_block` decorator does the rest.
 
 Tests mirror the SDK's own pattern: instantiate the FB and call
-`execute_function_block(params=..., context=..., propagate_exceptions=True)`
+`execute_function_block(params=..., context=..., meta=..., propagate_exceptions=True)`
 with a context built by the SDK's
-`neops_worker_sdk.testing.factories.context_factory.create_workflow_context` —
-see `tests/`.
+`neops_worker_sdk.testing.factories.context_factory.create_workflow_context`
+and a meta built by
+`neops_worker_sdk.testing.factories.job_meta_factory.create_job_meta` (pass
+`network_zone="zone-a"` to test a block in another zone) — see `tests/`.
 
 ## The `simple_test_connection` workflow
 
@@ -147,6 +157,9 @@ editing in place (and keep the FB identifier in the step in sync with the FB's
 - **`neops_worker_sdk`** is exact-pinned: the SDK is in beta and its
   generated engine client (`neops_workflow_engine_client`) must match the
   engine's REST contract. Bump the pin consciously, not via lockfile drift.
+  SDK 0.4 speaks the engine client of 0.45, which routes jobs by network
+  zone; the worker's `NEOPS_WORKER_NETWORK_ZONES` (see `.env.dist`) names the
+  zones it serves.
 - **scrapli 2**: the SDK's scrapli connections are built on scrapli 2 (the
   `scrapli2` distribution). A raw scrapli connection is a `scrapli.Cli`:
   call `send_input(input_=...)` (not `send_command()`); on its result, parse
