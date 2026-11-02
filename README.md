@@ -177,7 +177,7 @@ worker that serves that zone and registers this block.
 - **`neops_worker_sdk`** is exact-pinned: the SDK is in beta and its
   generated engine client (`neops_workflow_engine_client`) must match the
   engine's REST contract. Bump the pin consciously, not via lockfile drift.
-  SDK 0.4 speaks the engine client of 0.45, which routes jobs by network
+  SDK 0.5 speaks the engine client of 0.46, which routes jobs by network
   zone; the worker's `NEOPS_WORKER_NETWORK_ZONES` (see `.env.dist`) names the
   zones it serves.
 - **scrapli 2**: the SDK's scrapli connections are built on scrapli 2 (the
