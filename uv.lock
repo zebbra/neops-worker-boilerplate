@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.12"
 
 [manifest]
@@ -1263,7 +1263,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "neops-worker-sdk", specifier = "==0.2.0b8" }]
+requires-dist = [{ name = "neops-worker-sdk", specifier = "==0.5.0b3" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1313,7 +1313,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/c2/fb/29dbb4987f81d7932
 
 [[package]]
 name = "neops-worker-sdk"
-version = "0.2.0b8"
+version = "0.5.0b3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asyncssh" },
@@ -1326,6 +1326,7 @@ dependencies = [
     { name = "ncclient" },
     { name = "neops-workflow-engine-client" },
     { name = "netmiko" },
+    { name = "pydantic" },
     { name = "pynetbox" },
     { name = "python-dotenv" },
     { name = "python-slugify" },
@@ -1335,14 +1336,14 @@ dependencies = [
     { name = "textfsm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/77/37/72434636ff81d1d62ae9af1a293701ddcf2e75d08646379874bdadda8b77/neops_worker_sdk-0.2.0b8.tar.gz", hash = "sha256:7a50f2c94dba70ac12be8d0b23065bd78ba46ad615fd8f05825acdf004d527b2", size = 119502, upload-time = "2026-10-28T09:17:21.447Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0b/b2/8e1329ef60ba2536c8a2260a7b95a36b1539ed0e6200f639a7e0794c3c85/neops_worker_sdk-0.5.0b3.tar.gz", hash = "sha256:9279f6ba8a3108269c3339586b91109c134692a40b97fb26cbf3dc744e45dcb3", size = 148762, upload-time = "2026-11-06T20:10:58.387Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/13/856157b9f5d2f29d13f6e76e01ac1adfd28d7349b3122ac4c5739a3f74de/neops_worker_sdk-0.2.0b8-py3-none-any.whl", hash = "sha256:d2bb0478caf7cd5318893912fe0ac121b263488eb56ee2f5240869d2712f0139", size = 173788, upload-time = "2026-10-28T09:17:20.062Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/02/ed379b69d23d4bb39857f8b8c2919f21badd35614e2467bf4bdf7052f6de/neops_worker_sdk-0.5.0b3-py3-none-any.whl", hash = "sha256:a143d4ff9672fbba7ad51222e503811690c18d853e314ace0e87d5b3f422d038", size = 213679, upload-time = "2026-11-06T20:10:56.683Z" },
 ]
 
 [[package]]
 name = "neops-workflow-engine-client"
-version = "0.43.0b9"
+version = "0.46.0b4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1352,9 +1353,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/88/f6/be3504146d6e069572a6566d90893dc9aec082cf77a5e34142e69a991df5/neops_workflow_engine_client-0.43.0b9.tar.gz", hash = "sha256:918085e0e83db1f02a5fc0ec0bc199008d2320c1ec2888275b8c5009d00bead5", size = 117677, upload-time = "2026-10-27T16:20:46.664Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/ad/77df9efa4b4dd90a650161ac9ef8e9f7e62ca3198c323c0284669577f07f/neops_workflow_engine_client-0.46.0b4.tar.gz", hash = "sha256:142d822b3e33f4e31d562e4340e3d77d00947d39342f3037836347588bc5c5b9", size = 147263, upload-time = "2026-11-06T19:53:48.547Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c7/20/d368c612a679c578b246ec8edce957338bf3606fbedc1ed3953e4cf3f43c/neops_workflow_engine_client-0.43.0b9-py3-none-any.whl", hash = "sha256:2f392ee5b066d4e80634e00d26dd1202de8ef15e6e5c5e5c4a3bdcb48af5b3f3", size = 274516, upload-time = "2026-10-27T16:20:44.649Z" },
+    { url = "https://files.pythonhosted.org/packages/97/8a/84d9f4d775c19aaeaa7b94d04c068fce801d9732ca2fd69dd22b11fa5dcb/neops_workflow_engine_client-0.46.0b4-py3-none-any.whl", hash = "sha256:b4bc1ae5a5467d4262ae00505a817330355e473d8bbe2e49dc88812083d6986d", size = 342814, upload-time = "2026-11-06T19:53:46.744Z" },
 ]
 
 [[package]]
