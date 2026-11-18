@@ -27,7 +27,7 @@ defaults:
 jobs:
   lint-test:
     name: Lint, Audit, type-check & tests
-    runs-on: ubuntu-latest
+    runs-on: hetzner
     steps:
       - uses: actions/checkout@v4
 
@@ -65,7 +65,7 @@ jobs:
   docker:
     name: Build Docker (no push)
     needs: lint-test
-    runs-on: ubuntu-latest
+    runs-on: hetzner
     steps:
       - uses: actions/checkout@v4
 
